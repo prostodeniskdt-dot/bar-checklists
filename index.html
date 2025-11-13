@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Чек-листы бара</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <!-- Стили -->
+  <link rel="stylesheet" href="style.css"/>
+
+  <!-- jsPDF для экспорта в PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+
+  <!-- Наш JavaScript -->
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">
+        <span class="logo-main">BAR CONTROL</span>
+        <span class="logo-sub">checklists</span>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-item active" data-checklist="opening">Открытие смены</button>
+        <button class="nav-item" data-checklist="day">В течение дня</button>
+        <button class="nav-item" data-checklist="closing">Закрытие смены</button>
+        <button class="nav-item" data-checklist="prep">Заготовочный цех</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <small>Версия 1.0 (GitHub Pages)</small>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="main-header">
+        <div>
+          <h1 id="checklist-title">Чек-лист</h1>
+          <p id="checklist-subtitle" class="subtitle">
+            Выберите нужный чек-лист слева и отмечайте пункты по мере выполнения.
+          </p>
+        </div>
+        <div class="actions">
+          <button id="reset-btn" class="btn btn-secondary">Сбросить чек-лист</button>
+          <button id="export-btn" class="btn btn-primary">Скачать PDF отчёт</button>
+        </div>
+      </header>
+
+      <section class="content">
+        <div id="checklist-container" class="checklist-container">
+          <!-- Сюда динамически рендерятся пункты чек-листа -->
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast hidden">
+    <span id="toast-message"></span>
+  </div>
+</body>
+</html>
