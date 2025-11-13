@@ -1,0 +1,338 @@
+/* Базовые стили */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background-color: #050505;
+  color: #f5f5f5;
+}
+
+/* Макет приложения */
+.app {
+  display: flex;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #111111 0, #050505 55%);
+}
+
+/* Сайдбар */
+.sidebar {
+  width: 260px;
+  background: linear-gradient(180deg, #000000, #111111);
+  border-right: 1px solid #262626;
+  padding: 16px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.logo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.logo-main {
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  font-size: 14px;
+  text-transform: uppercase;
+  color: #ffd600;
+}
+
+.logo-sub {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #999999;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.nav-item {
+  border: none;
+  background: transparent;
+  color: #e5e5e5;
+  padding: 10px 12px;
+  border-radius: 10px;
+  text-align: left;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.18s ease, color 0.18s ease, transform 0.07s ease;
+}
+
+.nav-item:hover {
+  background: #191919;
+  transform: translateY(-1px);
+}
+
+.nav-item.active {
+  background: #ffd600;
+  color: #000000;
+  font-weight: 600;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  font-size: 11px;
+  color: #777777;
+}
+
+/* Основная часть */
+.main {
+  flex: 1;
+  padding: 18px 18px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+h1 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #b0b0b0;
+}
+
+/* Кнопки */
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.07s ease, box-shadow 0.1s ease, background 0.18s ease, color 0.18s ease;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background-color: #ffd600;
+  color: #000000;
+  box-shadow: 0 0 0 1px #b89b00, 0 10px 25px rgba(0, 0, 0, 0.65);
+}
+
+.btn-primary:hover {
+  background-color: #ffe34d;
+  box-shadow: 0 0 0 1px #c8a900, 0 12px 30px rgba(0, 0, 0, 0.8);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background-color: #181818;
+  color: #f5f5f5;
+  box-shadow: 0 0 0 1px #333333;
+}
+
+.btn-secondary:hover {
+  background-color: #222222;
+  box-shadow: 0 0 0 1px #444444;
+  transform: translateY(-1px);
+}
+
+/* Контент */
+.content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.checklist-container {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Один пункт чек-листа */
+.checklist-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #101010;
+  border: 1px solid #1f1f1f;
+}
+
+.checklist-item-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex: 1;
+}
+
+.checklist-item input[type="checkbox"] {
+  margin-top: 3px;
+  accent-color: #ffd600;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.checklist-text {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.checklist-text.done {
+  text-decoration: line-through;
+  color: #777777;
+}
+
+/* Блок фото */
+.photo-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-end;
+}
+
+.photo-label {
+  font-size: 11px;
+  color: #aaaaaa;
+}
+
+.photo-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.photo-input {
+  display: none;
+}
+
+.photo-btn {
+  font-size: 11px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  border: 1px dashed #ffd600;
+  background: transparent;
+  color: #ffd600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.photo-btn:hover {
+  background: rgba(255, 214, 0, 0.1);
+}
+
+.photo-preview {
+  width: 46px;
+  height: 46px;
+  border-radius: 8px;
+  border: 1px solid #333333;
+  object-fit: cover;
+}
+
+/* Toast (уведомление) */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  background: #111111;
+  color: #ffd600;
+  border: 1px solid #ffd600;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.toast.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(-3px);
+}
+
+.toast.hidden {
+  opacity: 0;
+}
+
+/* Адаптив под мобилки */
+@media (max-width: 768px) {
+  .app {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 12px;
+  }
+
+  .nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .nav-item {
+    flex: 1 1 48%;
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+
+  .main {
+    padding: 10px 12px 60px;
+  }
+
+  .main-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .actions {
+    width: 100%;
+  }
+
+  .btn {
+    flex: 1 1 auto;
+    text-align: center;
+    justify-content: center;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .checklist-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .photo-block {
+    align-items: flex-start;
+  }
+}
