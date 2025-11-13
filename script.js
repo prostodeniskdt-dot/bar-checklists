@@ -9,18 +9,21 @@ const CHECKLISTS = {
       "Зайти в рабочую беседу и быть в курсе последних новостей в жизни бара.",
       "Убедиться, что твой внешний вид соответствует всем стандартам.",
       "Открыть смену в iiko",
-      "Проверить все позиции бара по наличию и обновить стоп/старт-лист по бару, выложить в группу",
+      // ← скрин обязателен
+      "Проверить все позиции бара по наличию и обновить стоп/старт-лист по бару, выложить в группу (скрин поста в группе «Стоп лист Ретей»)",
       "Включить кофемашину и проверить ее на исправность (в случае неисправности сообщить в группу. \"Собрать\" кофемашину, предварительно промыв все мелкие части.",
       "Списать в iiko настройка помола, пролив молока, пролив пива (фото)",
       "Выстваить все необходимые пф в станции (проверить сроки пф; бутылки под воду и прибэтчи, соусники чистые)",
       "Ветошь для натирки и поверхностей лежит в отведённых местах, не разбросанная по бару.",
-      "Принесен запас кофе на день (матчи, какао тоже — заполнены боксы с ними) (фото)",
+      "Принесен запас кофе на день (матчи, какао тоже - заполнены боксы с ними) (фото)",
       "Стаканы на вынос вместе с крышками в наличии и стоят аккуратно (в шкафу за баром есть запас) (фото)",
-      "Минажи заполнены салфетками (в шкафу пополнен запас салфеток)",
+      // ← фото салфеток в шкафу — обязателен
+      "Минажи заполнены салфетками (в шкафу пополнен запас салфеток) (фото салфеток в шкафу)",
       "Настройка эспрессо (выставление правильного помола и граммовки)",
       "Вся посуда натерта (без сколов) и принесена в бар, и расставлена на свои места, недостающую посуду спустили со шкафа",
       "Барные полки чистые (буылки повернуты этикеткой к гостю, стоят аккуратно)",
-      "Холодильнк пополенен фруктами (фрукты обработаны), шалфеем, цветами на смену (софт, вина в наличии)",
+      // ← содержит (фото) — обязателен
+      "Холодильнк пополенен фруктами (фрукты обработаны), шалфеем, цветами (фото) на смену (софт, вина в наличии)",
       "Стекла холодильников чистые",
       "Монитор iiko и принтер чистые.",
       "Термосы с мотивационным кофе принесены из Киссатен",
@@ -111,7 +114,7 @@ const CHECKLISTS = {
 let checklistState = {};
 let currentChecklistId = "opening";
 let currentUser = null; // {name, role}
-let timers = {}; // { [clid]: { startedAt, finishedAt, deadline, tick } }
+let timers = {};        // { [clid]: { startedAt, finishedAt, deadline, tick } }
 
 // ------------------------- УТИЛЫ -------------------------
 const $ = s => document.querySelector(s);
@@ -130,78 +133,52 @@ function showToast(message) {
 
 function escapeHtml(text) {
   if (!text) return "";
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+  return text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
 }
+function fmtTime(ts){ if(!ts) return "—"; return new Date(ts).toLocaleString("ru-RU"); }
+function pad(n){ return n<10?("0"+n):(""+n); }
+function formatCountdown(ms){ const s=Math.max(0,Math.floor(ms/1000)); const hh=Math.floor(s/3600), mm=Math.floor((s%3600)/60), ss=s%60; return `${pad(hh)}:${pad(mm)}:${pad(ss)}`; }
 
-function fmtTime(ts) {
-  if (!ts) return "—";
-  return new Date(ts).toLocaleString("ru-RU");
-}
-function pad(n){return n<10?("0"+n):(""+n);}
-function formatCountdown(ms) {
-  const s = Math.max(0, Math.floor(ms/1000));
-  const hh = Math.floor(s/3600);
-  const mm = Math.floor((s%3600)/60);
-  const ss = s%60;
-  return `${pad(hh)}:${pad(mm)}:${pad(ss)}`;
+// ------------------------- ФОТО: когда требуется -------------------------
+const SPECIAL_REQUIRED_SUBSTRINGS = [
+  "скрин поста в группе",          // из пункта про стоп/старт-лист
+  "стоп лист ретей",               // чтобы не зависеть от кавычек
+  "фото салфеток в шкафу"          // из пункта про минажи/салфетки
+];
+
+function isPhotoRequired(textRaw) {
+  const t = (textRaw || "").toLowerCase();
+  // Любое упоминание (фото...) или (скрин...)
+  if (t.includes("(фото") || t.includes("(скрин")) return true;
+  // Защитный механизм на конкретики из ТЗ
+  return SPECIAL_REQUIRED_SUBSTRINGS.some(s => t.includes(s));
 }
 
 // ------------------------- АВТОРИЗАЦИЯ -------------------------
-function loadUser() {
-  try {
-    const raw = localStorage.getItem("barctrl.user");
-    if (raw) currentUser = JSON.parse(raw);
-  } catch {}
-  updateUserBadge();
-}
-function saveUser() {
-  localStorage.setItem("barctrl.user", JSON.stringify(currentUser));
-  updateUserBadge();
-}
-function updateUserBadge() {
-  const badge = $("#user-badge");
-  badge.textContent = currentUser ? `${currentUser.name} • ${currentUser.role}` : "Гость";
-}
+function loadUser(){ try{ const raw=localStorage.getItem("barctrl.user"); if(raw) currentUser=JSON.parse(raw);}catch{} updateUserBadge(); }
+function saveUser(){ localStorage.setItem("barctrl.user", JSON.stringify(currentUser)); updateUserBadge(); }
+function updateUserBadge(){ $("#user-badge").textContent = currentUser ? `${currentUser.name} • ${currentUser.role}` : "Гость"; }
 function openAuthModal(){ $("#auth-modal").classList.remove("hidden"); $("#auth-name").focus(); }
 function closeAuthModal(){ $("#auth-modal").classList.add("hidden"); }
-function setupAuth() {
-  $("#login-btn").addEventListener("click", () => {
-    if (currentUser) {
-      currentUser = null;
-      localStorage.removeItem("barctrl.user");
-      updateUserBadge();
-      $("#login-btn").textContent = "Войти";
-      showToast("Вы вышли из системы.");
-    } else openAuthModal();
+function setupAuth(){
+  $("#login-btn").addEventListener("click", ()=>{
+    if (currentUser){ currentUser=null; localStorage.removeItem("barctrl.user"); updateUserBadge(); $("#login-btn").textContent="Войти"; showToast("Вы вышли из системы."); }
+    else openAuthModal();
   });
   $("#auth-cancel").addEventListener("click", closeAuthModal);
-  $("#auth-ok").addEventListener("click", () => {
-    const name = $("#auth-name").value.trim();
-    const role = $("#auth-role").value;
-    if (!name) return showToast("Введите имя.");
-    currentUser = { name, role };
-    saveUser();
-    closeAuthModal();
-    $("#login-btn").textContent = "Выйти";
-    showToast(`Вошли как ${name}`);
+  $("#auth-ok").addEventListener("click", ()=>{
+    const name=$("#auth-name").value.trim(); const role=$("#auth-role").value;
+    if(!name) return showToast("Введите имя.");
+    currentUser={name, role}; saveUser(); closeAuthModal(); $("#login-btn").textContent="Выйти"; showToast(`Вошли как ${name}`);
   });
-  if (currentUser) $("#login-btn").textContent = "Выйти";
+  if(currentUser) $("#login-btn").textContent="Выйти";
 }
 
 // ------------------------- ТАЙМЕРЫ -------------------------
-function ensureTimer(clid){
-  if(!timers[clid]) timers[clid]={startedAt:null, finishedAt:null, deadline:null, tick:null};
-  return timers[clid];
-}
-function loadTimers(){
-  try{ const raw=localStorage.getItem("barctrl.timers"); if(raw) timers=JSON.parse(raw);}catch{}
-}
+function ensureTimer(clid){ if(!timers[clid]) timers[clid]={startedAt:null, finishedAt:null, deadline:null, tick:null}; return timers[clid]; }
+function loadTimers(){ try{ const raw=localStorage.getItem("barctrl.timers"); if(raw) timers=JSON.parse(raw);}catch{} }
 function persistTimers(){ localStorage.setItem("barctrl.timers", JSON.stringify(timers)); }
+
 function startChecklistTimer(){
   const t=ensureTimer(currentChecklistId);
   if(t.startedAt) return;
@@ -211,7 +188,7 @@ function startChecklistTimer(){
   persistTimers();
   renderSessionInfo();
   runTicker();
-  $("#start-btn").disabled = true;
+  $("#start-btn").disabled = true; // после старта сброс недоступен (кнопки сброса у нас и так нет)
   showToast("Таймер на 1 час запущен.");
 }
 function finishChecklistNow(){
@@ -225,19 +202,12 @@ function runTicker(){
   if(!t.startedAt){ timerEl.classList.add("hidden"); return; }
   timerEl.classList.remove("hidden");
   if(t.tick){ clearInterval(t.tick); t.tick=null; }
-  const update=()=>{
-    const now=Date.now();
-    const left=(t.deadline||now)-now;
-    timerEl.textContent=formatCountdown(left);
-    if(left<=0){ timerEl.textContent="00:00:00"; clearInterval(t.tick); t.tick=null; }
-  };
+  const update=()=>{ const now=Date.now(); const left=(t.deadline||now)-now; timerEl.textContent=formatCountdown(left); if(left<=0){ timerEl.textContent="00:00:00"; clearInterval(t.tick); t.tick=null; } };
   update(); t.tick=setInterval(update,1000);
 }
 function renderSessionInfo(){
   const t=ensureTimer(currentChecklistId);
-  $("#session-info").textContent =
-    (t.startedAt?`Начато: ${fmtTime(t.startedAt)}; `:"")+
-    (t.finishedAt?`Завершено: ${fmtTime(t.finishedAt)}`:"");
+  $("#session-info").textContent=(t.startedAt?`Начато: ${fmtTime(t.startedAt)}; `:"")+(t.finishedAt?`Завершено: ${fmtTime(t.finishedAt)}`:"");
 }
 
 // ------------------------- РЕНДЕР -------------------------
@@ -260,6 +230,7 @@ function setupSidebar(){
     });
   });
 }
+
 function renderChecklist(){
   const cl=CHECKLISTS[currentChecklistId];
   const state=checklistState[currentChecklistId];
@@ -283,7 +254,9 @@ function renderChecklist(){
 
     const photoBlock=document.createElement("div"); photoBlock.className="photo-block";
 
-    const label=document.createElement("div"); label.className="photo-label"; label.textContent="Фото выполнения (обязательно):";
+    const label=document.createElement("div"); label.className="photo-label";
+    const required = isPhotoRequired(item.text);
+    label.textContent = required ? "Фото/скрин выполнения (обязательно):" : "Фото (необязательно):";
 
     const actions=document.createElement("div"); actions.className="photo-actions";
 
@@ -301,8 +274,8 @@ function renderChecklist(){
         item.photoDataUrl=e.target.result;
         preview.src=item.photoDataUrl; preview.style.display="block";
         photoBtn.textContent="Изменить фото";
-        // авто-галочка при наличии фото
-        item.done=true; checkbox.checked=true; textSpan.classList.add("done");
+        // автогалочка только добавляет удобство — но не обязательна для НЕобязательных фото
+        if(required){ item.done=true; checkbox.checked=true; textSpan.classList.add("done"); }
         itemEl.classList.remove("error");
       };
       reader.readAsDataURL(file);
@@ -316,7 +289,7 @@ function renderChecklist(){
   });
 }
 
-// ------------------------- ВАЛИДАЦИЯ -------------------------
+// ------------------------- ВАЛИДАЦИЯ ПЕРЕД ОТЧЁТОМ -------------------------
 function validateBeforeShare(){
   const state=checklistState[currentChecklistId];
   const t=ensureTimer(currentChecklistId);
@@ -331,13 +304,14 @@ function validateBeforeShare(){
   const itemEls=[...container.querySelectorAll(".checklist-item")];
 
   state.items.forEach((item, idx)=>{
-    const ok = !!item.photoDataUrl;
+    const must = isPhotoRequired(item.text);
+    const ok = must ? !!item.photoDataUrl : true;
     if(!ok){ missing++; itemEls[idx].classList.add("error"); }
     else { itemEls[idx].classList.remove("error"); }
   });
 
   if(missing>0){
-    showToast(`Не прикреплены фото по ${missing} пункт(ам).`);
+    showToast(`Не прикреплены фото/скрин по ${missing} обязательным пункт(ам).`);
     return false;
   }
   return true;
@@ -364,7 +338,8 @@ function buildPrintHtml(){
   const itemsHtml=state.items.map(item=>{
     const prefix=item.done?"☑":"☐";
     const photoHtml=item.photoDataUrl?`<div class="print-photo"><img src="${item.photoDataUrl}" alt="Фото"/></div>`:"";
-    return `<li><div class="print-item-text">${prefix} ${escapeHtml(item.text)}</div>${photoHtml}</li>`;
+    const req = isPhotoRequired(item.text) ? ' <span style="color:#c81e1e">(фото/скрин обяз.)</span>' : '';
+    return `<li><div class="print-item-text">${prefix} ${escapeHtml(item.text)}${req}</div>${photoHtml}</li>`;
   }).join("");
 
   return `
@@ -388,7 +363,6 @@ async function shareCurrentChecklistPDF(){
   if(!window.jspdf || !window.jspdf.jsPDF){ alert("Ошибка: jsPDF не загружен."); return; }
   if(typeof html2canvas==="undefined"){ alert("Ошибка: html2canvas не загружен."); return; }
 
-  // фиксируем время завершения
   finishChecklistNow();
 
   const printArea=document.getElementById("print-area");
@@ -437,7 +411,6 @@ async function shareCurrentChecklistPDF(){
 }
 
 function autoResetAfterShare(){
-  // кнопки «Сбросить» больше нет — чистим автоматически после отправки/скачивания
   const state=checklistState[currentChecklistId];
   state.items.forEach(i=>{ i.done=false; i.photoDataUrl=null; });
   const t=ensureTimer(currentChecklistId);
