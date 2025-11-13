@@ -14,7 +14,7 @@ const CHECKLISTS = {
       "Списать в iiko настройка помола, пролив молока, пролив пива (фото)",
       "Выстваить все необходимые пф в станции (проверить сроки пф; бутылки под воду и прибэтчи, соусники чистые)",
       "Ветошь для натирки и поверхностей лежит в отведённых местах, не разбросанная по бару.",
-      "Принесен запас кофе на день (матчи, какао тоже - заполнены боксы с ними) (фото)",
+      "Принесен запас кофе на день (матчи, какао тоже — заполнены боксы с ними) (фото)",
       "Стаканы на вынос вместе с крышками в наличии и стоят аккуратно (в шкафу за баром есть запас) (фото)",
       "Минажи заполнены салфетками (в шкафу пополнен запас салфеток)",
       "Настройка эспрессо (выставление правильного помола и граммовки)",
@@ -107,11 +107,11 @@ const CHECKLISTS = {
   }
 };
 
-// Состояние приложения
+// Состояние
 let checklistState = {};
 let currentChecklistId = "opening";
 let currentUser = null; // {name, role}
-let timers = {}; // по чек-листу: { startedAt:number|null, finishedAt:number|null, deadline:number|null, tick:int|null }
+let timers = {}; // { [clid]: { startedAt, finishedAt, deadline, tick } }
 
 // ------------------------- УТИЛЫ -------------------------
 const $ = s => document.querySelector(s);
@@ -142,14 +142,12 @@ function fmtTime(ts) {
   if (!ts) return "—";
   return new Date(ts).toLocaleString("ru-RU");
 }
-
-function pad(n) { return n < 10 ? "0"+n : ""+n; }
-
+function pad(n){return n<10?("0"+n):(""+n);}
 function formatCountdown(ms) {
   const s = Math.max(0, Math.floor(ms/1000));
-  const hh = Math.floor(s / 3600);
-  const mm = Math.floor((s % 3600) / 60);
-  const ss = s % 60;
+  const hh = Math.floor(s/3600);
+  const mm = Math.floor((s%3600)/60);
+  const ss = s%60;
   return `${pad(hh)}:${pad(mm)}:${pad(ss)}`;
 }
 
@@ -161,41 +159,25 @@ function loadUser() {
   } catch {}
   updateUserBadge();
 }
-
 function saveUser() {
   localStorage.setItem("barctrl.user", JSON.stringify(currentUser));
   updateUserBadge();
 }
-
 function updateUserBadge() {
   const badge = $("#user-badge");
-  if (currentUser) {
-    badge.textContent = `${currentUser.name} • ${currentUser.role}`;
-  } else {
-    badge.textContent = "Гость";
-  }
+  badge.textContent = currentUser ? `${currentUser.name} • ${currentUser.role}` : "Гость";
 }
-
-function openAuthModal() {
-  $("#auth-modal").classList.remove("hidden");
-  $("#auth-name").focus();
-}
-function closeAuthModal() {
-  $("#auth-modal").classList.add("hidden");
-}
-
+function openAuthModal(){ $("#auth-modal").classList.remove("hidden"); $("#auth-name").focus(); }
+function closeAuthModal(){ $("#auth-modal").classList.add("hidden"); }
 function setupAuth() {
   $("#login-btn").addEventListener("click", () => {
     if (currentUser) {
-      // выход
       currentUser = null;
       localStorage.removeItem("barctrl.user");
       updateUserBadge();
-      showToast("Вы вышли из системы.");
       $("#login-btn").textContent = "Войти";
-    } else {
-      openAuthModal();
-    }
+      showToast("Вы вышли из системы.");
+    } else openAuthModal();
   });
   $("#auth-cancel").addEventListener("click", closeAuthModal);
   $("#auth-ok").addEventListener("click", () => {
@@ -208,356 +190,268 @@ function setupAuth() {
     $("#login-btn").textContent = "Выйти";
     showToast(`Вошли как ${name}`);
   });
-
-  // если уже залогинены раньше
   if (currentUser) $("#login-btn").textContent = "Выйти";
 }
 
 // ------------------------- ТАЙМЕРЫ -------------------------
-function ensureTimer(clid) {
-  if (!timers[clid]) {
-    timers[clid] = { startedAt: null, finishedAt: null, deadline: null, tick: null };
-  }
+function ensureTimer(clid){
+  if(!timers[clid]) timers[clid]={startedAt:null, finishedAt:null, deadline:null, tick:null};
   return timers[clid];
 }
-
-function startChecklistTimer() {
-  const t = ensureTimer(currentChecklistId);
-  if (t.startedAt) return; // уже идёт
-  t.startedAt = Date.now();
-  t.deadline = t.startedAt + 60 * 60 * 1000; // +1 час
-  t.finishedAt = null;
-
-  localStorage.setItem("barctrl.timers", JSON.stringify(timers));
+function loadTimers(){
+  try{ const raw=localStorage.getItem("barctrl.timers"); if(raw) timers=JSON.parse(raw);}catch{}
+}
+function persistTimers(){ localStorage.setItem("barctrl.timers", JSON.stringify(timers)); }
+function startChecklistTimer(){
+  const t=ensureTimer(currentChecklistId);
+  if(t.startedAt) return;
+  t.startedAt=Date.now();
+  t.deadline=t.startedAt+60*60*1000;
+  t.finishedAt=null;
+  persistTimers();
   renderSessionInfo();
   runTicker();
+  $("#start-btn").disabled = true;
   showToast("Таймер на 1 час запущен.");
 }
-
-function finishChecklistNow() {
-  const t = ensureTimer(currentChecklistId);
-  if (!t.startedAt) return;
-  if (!t.finishedAt) {
-    t.finishedAt = Date.now();
-    localStorage.setItem("barctrl.timers", JSON.stringify(timers));
-    renderSessionInfo();
-  }
+function finishChecklistNow(){
+  const t=ensureTimer(currentChecklistId);
+  if(!t.startedAt) return false;
+  if(!t.finishedAt){ t.finishedAt=Date.now(); persistTimers(); renderSessionInfo(); }
+  return true;
 }
-
-function loadTimers() {
-  try {
-    const raw = localStorage.getItem("barctrl.timers");
-    if (raw) timers = JSON.parse(raw);
-  } catch {}
-}
-
-function runTicker() {
-  const timerEl = $("#timer");
-  const t = ensureTimer(currentChecklistId);
-
-  if (!t.startedAt) {
-    timerEl.classList.add("hidden");
-    return;
-  }
+function runTicker(){
+  const timerEl=$("#timer"); const t=ensureTimer(currentChecklistId);
+  if(!t.startedAt){ timerEl.classList.add("hidden"); return; }
   timerEl.classList.remove("hidden");
-
-  // очищаем старый тикер
-  if (t.tick) {
-    clearInterval(t.tick);
-    t.tick = null;
-  }
-
-  const update = () => {
-    const now = Date.now();
-    const left = (t.deadline || now) - now;
-    timerEl.textContent = formatCountdown(left);
-    if (left <= 0) {
-      timerEl.textContent = "00:00:00";
-      clearInterval(t.tick);
-      t.tick = null;
-    }
+  if(t.tick){ clearInterval(t.tick); t.tick=null; }
+  const update=()=>{
+    const now=Date.now();
+    const left=(t.deadline||now)-now;
+    timerEl.textContent=formatCountdown(left);
+    if(left<=0){ timerEl.textContent="00:00:00"; clearInterval(t.tick); t.tick=null; }
   };
-  update();
-  t.tick = setInterval(update, 1000);
+  update(); t.tick=setInterval(update,1000);
 }
-
-function renderSessionInfo() {
-  const t = ensureTimer(currentChecklistId);
+function renderSessionInfo(){
+  const t=ensureTimer(currentChecklistId);
   $("#session-info").textContent =
-    (t.startedAt ? `Начато: ${fmtTime(t.startedAt)}; ` : "") +
-    (t.finishedAt ? `Завершено: ${fmtTime(t.finishedAt)}` : "");
+    (t.startedAt?`Начато: ${fmtTime(t.startedAt)}; `:"")+
+    (t.finishedAt?`Завершено: ${fmtTime(t.finishedAt)}`:"");
 }
 
 // ------------------------- РЕНДЕР -------------------------
-function initState() {
-  checklistState = {};
-  for (const key in CHECKLISTS) {
-    const cl = CHECKLISTS[key];
-    checklistState[key] = {
-      items: cl.items.map(text => ({ text, done: false, photoDataUrl: null }))
-    };
+function initState(){
+  checklistState={};
+  for(const key in CHECKLISTS){
+    const cl=CHECKLISTS[key];
+    checklistState[key]={ items: cl.items.map(text=>({text, done:false, photoDataUrl:null})) };
   }
 }
-
-function setupSidebar() {
-  $$(".nav-item").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const id = btn.dataset.checklist;
-      if (id === currentChecklistId) return;
-      currentChecklistId = id;
-      $$(".nav-item").forEach(b => b.classList.remove("active"));
+function setupSidebar(){
+  $$(".nav-item").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const id=btn.dataset.checklist;
+      if(id===currentChecklistId) return;
+      currentChecklistId=id;
+      $$(".nav-item").forEach(b=>b.classList.remove("active"));
       btn.classList.add("active");
-      renderChecklist();
-      renderSessionInfo();
-      runTicker();
+      renderChecklist(); renderSessionInfo(); runTicker();
     });
   });
 }
+function renderChecklist(){
+  const cl=CHECKLISTS[currentChecklistId];
+  const state=checklistState[currentChecklistId];
 
-function renderChecklist() {
-  const cl = CHECKLISTS[currentChecklistId];
-  const state = checklistState[currentChecklistId];
+  $("#checklist-title").textContent=cl.title;
+  $("#checklist-subtitle").textContent=cl.subtitle;
 
-  $("#checklist-title").textContent = cl.title;
-  $("#checklist-subtitle").textContent = cl.subtitle;
+  const container=$("#checklist-container"); container.innerHTML="";
+  state.items.forEach(item=>{
+    const itemEl=document.createElement("div"); itemEl.className="checklist-item";
 
-  const container = $("#checklist-container");
-  container.innerHTML = "";
+    const left=document.createElement("div"); left.className="checklist-item-left";
 
-  state.items.forEach(item => {
-    const itemEl = document.createElement("div");
-    itemEl.className = "checklist-item";
+    const checkbox=document.createElement("input"); checkbox.type="checkbox"; checkbox.checked=item.done;
+    checkbox.addEventListener("change",()=>{ item.done=checkbox.checked; textSpan.classList.toggle("done", item.done); });
 
-    const left = document.createElement("div");
-    left.className = "checklist-item-left";
+    const textSpan=document.createElement("span"); textSpan.className="checklist-text"; textSpan.textContent=item.text;
+    if(item.done) textSpan.classList.add("done");
 
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.checked = item.done;
-    checkbox.addEventListener("change", () => {
-      item.done = checkbox.checked;
-      textSpan.classList.toggle("done", item.done);
-    });
+    left.appendChild(checkbox); left.appendChild(textSpan);
 
-    const textSpan = document.createElement("span");
-    textSpan.className = "checklist-text";
-    textSpan.textContent = item.text;
-    if (item.done) textSpan.classList.add("done");
+    const photoBlock=document.createElement("div"); photoBlock.className="photo-block";
 
-    left.appendChild(checkbox);
-    left.appendChild(textSpan);
+    const label=document.createElement("div"); label.className="photo-label"; label.textContent="Фото выполнения (обязательно):";
 
-    const photoBlock = document.createElement("div");
-    photoBlock.className = "photo-block";
+    const actions=document.createElement("div"); actions.className="photo-actions";
 
-    const label = document.createElement("div");
-    label.className = "photo-label";
-    label.textContent = "Фото выполнения (обязательно):";
+    const fileInput=document.createElement("input"); fileInput.type="file"; fileInput.accept="image/*"; fileInput.className="photo-input";
 
-    const actions = document.createElement("div");
-    actions.className = "photo-actions";
+    const photoBtn=document.createElement("button"); photoBtn.type="button"; photoBtn.className="photo-btn"; photoBtn.textContent=item.photoDataUrl?"Изменить фото":"Добавить фото";
 
-    const fileInput = document.createElement("input");
-    fileInput.type = "file";
-    fileInput.accept = "image/*";
-    fileInput.className = "photo-input";
+    const preview=document.createElement("img"); preview.className="photo-preview"; preview.style.display=item.photoDataUrl?"block":"none"; if(item.photoDataUrl) preview.src=item.photoDataUrl;
 
-    const photoBtn = document.createElement("button");
-    photoBtn.type = "button";
-    photoBtn.className = "photo-btn";
-    photoBtn.textContent = item.photoDataUrl ? "Изменить фото" : "Добавить фото";
-
-    const preview = document.createElement("img");
-    preview.className = "photo-preview";
-    preview.style.display = item.photoDataUrl ? "block" : "none";
-    if (item.photoDataUrl) preview.src = item.photoDataUrl;
-
-    photoBtn.addEventListener("click", () => fileInput.click());
-
-    fileInput.addEventListener("change", () => {
-      const file = fileInput.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = e => {
-        item.photoDataUrl = e.target.result;
-        preview.src = item.photoDataUrl;
-        preview.style.display = "block";
-        photoBtn.textContent = "Изменить фото";
+    photoBtn.addEventListener("click",()=>fileInput.click());
+    fileInput.addEventListener("change",()=>{
+      const file=fileInput.files[0]; if(!file) return;
+      const reader=new FileReader();
+      reader.onload=e=>{
+        item.photoDataUrl=e.target.result;
+        preview.src=item.photoDataUrl; preview.style.display="block";
+        photoBtn.textContent="Изменить фото";
+        // авто-галочка при наличии фото
+        item.done=true; checkbox.checked=true; textSpan.classList.add("done");
+        itemEl.classList.remove("error");
       };
       reader.readAsDataURL(file);
     });
 
-    actions.appendChild(photoBtn);
-    actions.appendChild(preview);
-    photoBlock.appendChild(label);
-    photoBlock.appendChild(actions);
+    actions.appendChild(photoBtn); actions.appendChild(preview);
+    photoBlock.appendChild(label); photoBlock.appendChild(actions);
 
-    itemEl.appendChild(left);
-    itemEl.appendChild(photoBlock);
-
+    itemEl.appendChild(left); itemEl.appendChild(photoBlock);
     container.appendChild(itemEl);
   });
 }
 
-function resetCurrentChecklist(showMessage = true) {
-  const state = checklistState[currentChecklistId];
-  state.items.forEach(i => { i.done = false; i.photoDataUrl = null; });
-  const t = ensureTimer(currentChecklistId);
-  if (t.tick) clearInterval(t.tick);
-  timers[currentChecklistId] = { startedAt: null, finishedAt: null, deadline: null, tick: null };
-  localStorage.setItem("barctrl.timers", JSON.stringify(timers));
-  renderChecklist();
-  renderSessionInfo();
-  runTicker();
-  if (showMessage) showToast("Чек-лист сброшен для следующей смены.");
+// ------------------------- ВАЛИДАЦИЯ -------------------------
+function validateBeforeShare(){
+  const state=checklistState[currentChecklistId];
+  const t=ensureTimer(currentChecklistId);
+
+  if(!t.startedAt){
+    showToast("Сначала нажмите «Начать» для фиксации времени.");
+    return false;
+  }
+
+  let missing=0;
+  const container=$("#checklist-container");
+  const itemEls=[...container.querySelectorAll(".checklist-item")];
+
+  state.items.forEach((item, idx)=>{
+    const ok = !!item.photoDataUrl;
+    if(!ok){ missing++; itemEls[idx].classList.add("error"); }
+    else { itemEls[idx].classList.remove("error"); }
+  });
+
+  if(missing>0){
+    showToast(`Не прикреплены фото по ${missing} пункт(ам).`);
+    return false;
+  }
+  return true;
 }
 
 // ------------------------- ПЕЧАТНАЯ ВЕРСТКА + PDF/SHARE -------------------------
-function buildPrintHtml() {
-  const cl = CHECKLISTS[currentChecklistId];
-  const state = checklistState[currentChecklistId];
-  const t = ensureTimer(currentChecklistId);
+function buildPrintHtml(){
+  const cl=CHECKLISTS[currentChecklistId];
+  const state=checklistState[currentChecklistId];
+  const t=ensureTimer(currentChecklistId);
 
-  const dateStr = new Date().toLocaleDateString("ru-RU");
-  const author = currentUser ? `${currentUser.name} • ${currentUser.role}` : "Гость";
+  const dateStr=new Date().toLocaleDateString("ru-RU");
+  const author=currentUser?`${currentUser.name} • ${currentUser.role}`:"Гость";
 
-  // статус по времени
-  let statusHtml = "";
-  if (t.startedAt && t.finishedAt) {
-    const ok = t.finishedAt <= t.deadline;
+  let statusHtml="";
+  if(t.startedAt){
+    const finishedAt = t.finishedAt || Date.now();
+    const ok = finishedAt <= t.deadline;
     statusHtml = `<div class="status ${ok ? "ok" : "bad"}">${
       ok ? "Чек-лист выполнен согласно нормам" : "Чек-лист не выполнен в срок"
     }</div>`;
   }
 
-  const itemsHtml = state.items.map(item => {
-    const prefix = item.done ? "☑" : "☐";
-    const photoHtml = item.photoDataUrl
-      ? `<div class="print-photo"><img src="${item.photoDataUrl}" alt="Фото"/></div>`
-      : "";
-    return `
-      <li>
-        <div class="print-item-text">${prefix} ${escapeHtml(item.text)}</div>
-        ${photoHtml}
-      </li>
-    `;
+  const itemsHtml=state.items.map(item=>{
+    const prefix=item.done?"☑":"☐";
+    const photoHtml=item.photoDataUrl?`<div class="print-photo"><img src="${item.photoDataUrl}" alt="Фото"/></div>`:"";
+    return `<li><div class="print-item-text">${prefix} ${escapeHtml(item.text)}</div>${photoHtml}</li>`;
   }).join("");
 
   return `
     <div class="print-wrapper">
       <h1 class="print-title">${escapeHtml(cl.title)}</h1>
       <p class="print-subtitle">${escapeHtml(cl.subtitle)}</p>
-
       <div class="print-grid">
         <div><b>Автор:</b> ${escapeHtml(author)}</div>
         <div><b>Дата:</b> ${dateStr}</div>
         <div><b>Начато:</b> ${fmtTime(t.startedAt)}</div>
         <div><b>Завершено:</b> ${fmtTime(t.finishedAt)}</div>
-        <div><b>Длительность:</b> ${t.startedAt && t.finishedAt ? formatCountdown(t.finishedAt - t.startedAt) : "—"}</div>
+        <div><b>Длительность:</b> ${t.startedAt && (t.finishedAt||Date.now()) ? formatCountdown((t.finishedAt||Date.now()) - t.startedAt) : "—"}</div>
       </div>
-
-      <ol class="print-list">
-        ${itemsHtml}
-      </ol>
-
+      <ol class="print-list">${itemsHtml}</ol>
       ${statusHtml}
-    </div>
-  `;
+    </div>`;
 }
 
-// Генерация PDF в Blob и шаринг
-async function shareCurrentChecklistPDF() {
-  if (!window.jspdf || !window.jspdf.jsPDF) {
-    alert("Ошибка: jsPDF не загружен.");
-    return;
-  }
-  if (typeof html2canvas === "undefined") {
-    alert("Ошибка: html2canvas не загружен.");
-    return;
-  }
+async function shareCurrentChecklistPDF(){
+  if(!validateBeforeShare()) return;
+  if(!window.jspdf || !window.jspdf.jsPDF){ alert("Ошибка: jsPDF не загружен."); return; }
+  if(typeof html2canvas==="undefined"){ alert("Ошибка: html2canvas не загружен."); return; }
 
-  // если не завершали — фиксируем время завершения
+  // фиксируем время завершения
   finishChecklistNow();
 
-  const printArea = document.getElementById("print-area");
-  printArea.innerHTML = buildPrintHtml();
+  const printArea=document.getElementById("print-area");
+  printArea.innerHTML=buildPrintHtml();
 
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF("p", "mm", "a4");
-  const pageWidth = pdf.internal.pageSize.getWidth();
-  const pageHeight = pdf.internal.pageSize.getHeight();
-  const margin = 10;
+  const { jsPDF }=window.jspdf;
+  const pdf=new jsPDF("p","mm","a4");
+  const pageWidth=pdf.internal.pageSize.getWidth();
+  const pageHeight=pdf.internal.pageSize.getHeight();
+  const margin=10;
 
-  const canvas = await html2canvas(printArea, { scale: 2, backgroundColor: "#ffffff" });
-  const imgData = canvas.toDataURL("image/png");
-  const imgWidth = pageWidth - margin * 2;
-  const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  const canvas=await html2canvas(printArea,{scale:2, backgroundColor:"#ffffff"});
+  const imgData=canvas.toDataURL("image/png");
+  const imgWidth=pageWidth - margin*2;
+  const imgHeight=(canvas.height*imgWidth)/canvas.width;
 
-  let heightLeft = imgHeight;
-  let position = margin;
-
-  pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
-  heightLeft -= (pageHeight - margin * 2);
-
-  while (heightLeft > 0) {
+  let heightLeft=imgHeight; let position=margin;
+  pdf.addImage(imgData,"PNG",margin,position,imgWidth,imgHeight);
+  heightLeft -= (pageHeight - margin*2);
+  while(heightLeft>0){
     pdf.addPage();
     position = margin - (imgHeight - heightLeft);
-    pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
-    heightLeft -= (pageHeight - margin * 2);
+    pdf.addImage(imgData,"PNG",margin,position,imgWidth,imgHeight);
+    heightLeft -= (pageHeight - margin*2);
   }
 
-  const cl = CHECKLISTS[currentChecklistId];
-  const fileName = `checklist-${cl.id}-${new Date().toISOString().slice(0,10)}.pdf`;
+  const cl=CHECKLISTS[currentChecklistId];
+  const fileName=`checklist-${cl.id}-${new Date().toISOString().slice(0,10)}.pdf`;
+  const blob=pdf.output("blob");
+  const file=new File([blob], fileName, {type:"application/pdf"});
 
-  // получаем Blob
-  const blob = pdf.output("blob");
-  const file = new File([blob], fileName, { type: "application/pdf" });
-
-  // если можно пошарить файл — шэрим
-  if (navigator.canShare && navigator.canShare({ files: [file] })) {
-    try {
-      await navigator.share({
-        title: "Отчёт чек-листа",
-        text: "PDF-отчёт по чек-листу",
-        files: [file]
-      });
+  if(navigator.canShare && navigator.canShare({files:[file]})){
+    try{
+      await navigator.share({ title:"Отчёт чек-листа", text:"PDF-отчёт по чек-листу", files:[file] });
       showToast("Отчёт отправлен.");
-      resetCurrentChecklist(false);
+      autoResetAfterShare();
       return;
-    } catch (e) {
-      // пользователь мог отменить — падаем в fallback
-      console.warn("Share canceled or failed", e);
-    }
+    }catch(e){ console.warn("Share canceled/failed", e); }
   }
 
-  // Fallback: создать ссылку и скачать + открыть, чтобы можно было переслать
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = fileName;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-
-  // также откроем в новой вкладке (можно переслать как файл/ссылку)
-  window.open(url, "_blank");
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a"); a.href=url; a.download=fileName; document.body.appendChild(a); a.click(); a.remove();
+  window.open(url,"_blank");
   showToast("Скачай/перешли PDF вручную.");
-  resetCurrentChecklist(false);
+  autoResetAfterShare();
+}
+
+function autoResetAfterShare(){
+  // кнопки «Сбросить» больше нет — чистим автоматически после отправки/скачивания
+  const state=checklistState[currentChecklistId];
+  state.items.forEach(i=>{ i.done=false; i.photoDataUrl=null; });
+  const t=ensureTimer(currentChecklistId);
+  if(t.tick) clearInterval(t.tick);
+  timers[currentChecklistId]={startedAt:null, finishedAt:null, deadline:null, tick:null};
+  localStorage.setItem("barctrl.timers", JSON.stringify(timers));
+  renderChecklist(); renderSessionInfo(); runTicker();
 }
 
 // ------------------------- ИНИТ -------------------------
-window.addEventListener("DOMContentLoaded", () => {
-  loadUser();
-  loadTimers();
-
-  initState();
-  setupSidebar();
-  renderChecklist();
-  renderSessionInfo();
-  runTicker();
-
-  $("#start-btn").addEventListener("click", startChecklistTimer);
-  $("#export-btn").addEventListener("click", shareCurrentChecklistPDF);
-  $("#reset-btn").addEventListener("click", () => resetCurrentChecklist(true));
+window.addEventListener("DOMContentLoaded",()=>{
+  loadUser(); loadTimers();
+  initState(); setupSidebar(); renderChecklist(); renderSessionInfo(); runTicker();
+  document.getElementById("start-btn").addEventListener("click", startChecklistTimer);
+  document.getElementById("export-btn").addEventListener("click", shareCurrentChecklistPDF);
   setupAuth();
 });
