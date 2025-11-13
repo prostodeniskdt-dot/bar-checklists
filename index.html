@@ -44,9 +44,26 @@
             Выберите нужный чек-лист слева и отмечайте пункты по мере выполнения.
           </p>
         </div>
-        <div class="actions">
-          <button id="reset-btn" class="btn btn-secondary">Сбросить чек-лист</button>
-          <button id="export-btn" class="btn btn-primary">Скачать PDF отчёт</button>
+
+        <div class="header-controls">
+          <div class="timer-block">
+            <button id="start-timer-btn" class="btn btn-secondary">
+              Начать чек-лист (1 час)
+            </button>
+            <span id="timer-display" class="timer-display">
+              Таймер не запущен
+            </span>
+          </div>
+
+          <div class="actions">
+            <button id="reset-btn" class="btn btn-secondary">Сбросить чек-лист</button>
+            <button id="export-btn" class="btn btn-primary">Отчёт / Поделиться</button>
+          </div>
+
+          <div class="user-panel">
+            <span id="user-info" class="user-info">Не авторизован</span>
+            <button id="login-btn" class="btn btn-secondary btn-small">Войти</button>
+          </div>
         </div>
       </header>
 
@@ -58,7 +75,7 @@
     </main>
   </div>
 
-  <!-- Скрытая область для печатной версии PDF (белый фон, текст + фото) -->
+  <!-- Скрытая область для печати PDF (белый фон, текст + фото) -->
   <div id="print-area" class="print-area"></div>
 
   <div id="toast" class="toast hidden">
