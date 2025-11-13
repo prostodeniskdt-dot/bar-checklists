@@ -202,7 +202,7 @@ function renderChecklist() {
 
     const label = document.createElement("div");
     label.className = "photo-label";
-    label.textContent = "Фото выполнения (необязательно):";
+    label.textContent = "Фото выполнения (обязательно):";
 
     const actions = document.createElement("div");
     actions.className = "photo-actions";
