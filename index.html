@@ -8,9 +8,8 @@
   <!-- Стили -->
   <link rel="stylesheet" href="style.css"/>
 
-  <!-- jsPDF для экспорта в PDF -->
+  <!-- jsPDF + html2canvas -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
-  <!-- html2canvas для корректной работы с Юникодом (в т.ч. кириллицей) и фото -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 
   <!-- Наш JavaScript -->
@@ -32,54 +31,61 @@
       </nav>
 
       <div class="sidebar-footer">
-        <small>Версия 1.0 (GitHub Pages)</small>
+        <small>Версия 1.2</small>
       </div>
     </aside>
 
     <main class="main">
       <header class="main-header">
-        <div>
+        <div class="title-block">
           <h1 id="checklist-title">Чек-лист</h1>
-          <p id="checklist-subtitle" class="subtitle">
-            Выберите нужный чек-лист слева и отмечайте пункты по мере выполнения.
-          </p>
+          <p id="checklist-subtitle" class="subtitle">Выберите нужный чек-лист слева и отмечайте пункты.</p>
+          <div class="meta-row">
+            <span id="user-badge" class="badge">Гость</span>
+            <span id="session-info" class="muted"></span>
+          </div>
         </div>
 
-        <div class="header-controls">
-          <div class="timer-block">
-            <button id="start-timer-btn" class="btn btn-secondary">
-              Начать чек-лист (1 час)
-            </button>
-            <span id="timer-display" class="timer-display">
-              Таймер не запущен
-            </span>
-          </div>
-
-          <div class="actions">
-            <button id="reset-btn" class="btn btn-secondary">Сбросить чек-лист</button>
-            <button id="export-btn" class="btn btn-primary">Отчёт / Поделиться</button>
-          </div>
-
-          <div class="user-panel">
-            <span id="user-info" class="user-info">Не авторизован</span>
-            <button id="login-btn" class="btn btn-secondary btn-small">Войти</button>
-          </div>
+        <div class="actions">
+          <button id="login-btn" class="btn btn-secondary">Войти</button>
+          <button id="start-btn" class="btn btn-start">Начать</button>
+          <span id="timer" class="timer hidden">01:00:00</span>
+          <button id="reset-btn" class="btn btn-secondary">Сбросить</button>
+          <button id="export-btn" class="btn btn-primary">Поделиться отчётом</button>
         </div>
       </header>
 
       <section class="content">
-        <div id="checklist-container" class="checklist-container">
-          <!-- Сюда динамически рендерятся пункты чек-листа -->
-        </div>
+        <div id="checklist-container" class="checklist-container"></div>
       </section>
     </main>
   </div>
 
-  <!-- Скрытая область для печати PDF (белый фон, текст + фото) -->
+  <!-- Скрытая область для печатной версии PDF (белый фон, текст + фото) -->
   <div id="print-area" class="print-area"></div>
 
-  <div id="toast" class="toast hidden">
-    <span id="toast-message"></span>
+  <!-- Модал авторизации -->
+  <div id="auth-modal" class="modal hidden">
+    <div class="modal-card">
+      <h3>Вход</h3>
+      <label class="field">
+        <span>Имя</span>
+        <input type="text" id="auth-name" placeholder="Иван Иванов"/>
+      </label>
+      <label class="field">
+        <span>Роль</span>
+        <select id="auth-role">
+          <option value="Сотрудник">Сотрудник</option>
+          <option value="Бар-менеджер">Бар-менеджер</option>
+        </select>
+      </label>
+      <div class="modal-actions">
+        <button id="auth-cancel" class="btn btn-secondary">Отмена</button>
+        <button id="auth-ok" class="btn btn-primary">Войти</button>
+      </div>
+    </div>
   </div>
+
+  <div id="toast" class="toast hidden"><span id="toast-message"></span></div>
 </body>
 </html>
