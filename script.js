@@ -1,4 +1,4 @@
-// Определяем все чек-листы из PDF
+// Определяем все чек-листы
 const CHECKLISTS = {
   opening: {
     id: "opening",
@@ -22,7 +22,7 @@ const CHECKLISTS = {
       "Барные полки чистые (буылки повернуты этикеткой к гостю, стоят аккуратно)",
       "Холодильнк пополенен фруктами (фрукты обработаны), шалфеем, цветами на смену (софт, вина в наличии)",
       "Стекла холодильников чистые",
-      "Монитор Iiko и принтер чистые.",
+      "Монитор iiko и принтер чистые.",
       "Термосы с мотивационным кофе принесены из Киссатен",
       "За баром и в зоне видимости гостей, отсутствуют посторонние предметы и личные вещи."
     ]
@@ -62,7 +62,7 @@ const CHECKLISTS = {
       "Отмыть раковину (и кран) от извести и налета, при забитии слива прочистить раковину вантузом (фото со снятым спилстопами раковины)",
       "Станции промытые (без остатков льда), чистые, сухие (фото)",
       "Изимилк промыт химией, ринзор чистый (фото)",
-      "Кофемашина промыта (включая места под группой), выключена, холдеры и инвентарь в кофеной химии (фото)",
+      "Кофемашина промыта (включая места под группой), выключена, холдеры и инвентарь в кофейной химии (фото)",
       "Промыть и протереть от пятен и налётов все блестящие, стеклянные, хромированные элементы, инвентарь.",
       "На полке с алкоголем отсутсвуют пустые места (фото)",
       "Протереть бутылки влажной тряпкой",
@@ -125,7 +125,7 @@ function initState() {
   }
 }
 
-// Показать toast (маленькое уведомление)
+// Toast (уведомление)
 function showToast(message) {
   const toast = document.getElementById("toast");
   const toastMessage = document.getElementById("toast-message");
@@ -138,7 +138,7 @@ function showToast(message) {
   }, 2500);
 }
 
-// Рендер бокового меню
+// Навигация
 function setupSidebar() {
   const navButtons = document.querySelectorAll(".nav-item");
   navButtons.forEach(btn => {
@@ -267,7 +267,7 @@ function resetCurrentChecklist(showMessage = true) {
   }
 }
 
-// Экранирование текста для HTML
+// Экранируем текст для HTML
 function escapeHtml(text) {
   if (!text) return "";
   return text
@@ -278,109 +278,13 @@ function escapeHtml(text) {
     .replace(/'/g, "&#039;");
 }
 
-// Собрать HTML для печатной версии чек-листа
+// Собираем HTML для печатной версии (текст + фото)
 function buildPrintHtml() {
   const cl = CHECKLISTS[currentChecklistId];
   const state = checklistState[currentChecklistId];
 
   const dateStr = new Date().toLocaleDateString("ru-RU");
+
   const itemsHtml = state.items
-    .map((item, index) => {
-      const prefix = item.done ? "☑" : "☐";
-      const photoNote = item.photoDataUrl ? " — фото приложено" : "";
-      return `<li>${prefix} ${escapeHtml(item.text)}${photoNote}</li>`;
-    })
-    .join("");
-
-  return `
-    <div class="print-wrapper">
-      <h1 class="print-title">${escapeHtml(cl.title)}</h1>
-      <p class="print-subtitle">${escapeHtml(cl.subtitle)}</p>
-      <p class="print-meta">Дата: ${dateStr}</p>
-      <ol class="print-list">
-        ${itemsHtml}
-      </ol>
-    </div>
-  `;
-}
-
-// Экспорт в PDF (через html2canvas, чтобы кириллица отображалась корректно)
-function exportCurrentChecklistToPDF() {
-  if (!window.jspdf || !window.jspdf.jsPDF) {
-    alert("Ошибка: библиотека jsPDF не загружена.");
-    return;
-  }
-  if (typeof html2canvas === "undefined") {
-    alert("Ошибка: библиотека html2canvas не загружена.");
-    return;
-  }
-
-  const printArea = document.getElementById("print-area");
-  if (!printArea) {
-    alert("Ошибка: не найден контейнер print-area.");
-    return;
-  }
-
-  // Собираем чистый белый лист с текстом чек-листа
-  printArea.innerHTML = buildPrintHtml();
-
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF("p", "mm", "a4");
-
-  const pageWidth = pdf.internal.pageSize.getWidth();
-  const pageHeight = pdf.internal.pageSize.getHeight();
-  const margin = 10;
-
-  html2canvas(printArea, {
-    scale: 2,
-    backgroundColor: "#ffffff"
-  })
-    .then(canvas => {
-      const imgData = canvas.toDataURL("image/png");
-
-      const imgWidth = pageWidth - margin * 2;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-      let heightLeft = imgHeight;
-      let position = margin;
-
-      // Первая страница
-      pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
-      heightLeft -= (pageHeight - margin * 2);
-
-      // Дополнительные страницы, если контент длинный
-      while (heightLeft > 0) {
-        pdf.addPage();
-        position = margin - (imgHeight - heightLeft);
-        pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
-        heightLeft -= (pageHeight - margin * 2);
-      }
-
-      const cl = CHECKLISTS[currentChecklistId];
-      const fileName = `checklist-${cl.id}-${new Date()
-        .toISOString()
-        .slice(0, 10)}.pdf`;
-      pdf.save(fileName);
-
-      // После экспорта — обновляем приложение (сброс чек-листа)
-      resetCurrentChecklist(false);
-      showToast("PDF сохранён. Чек-лист сброшен для следующей смены.");
-    })
-    .catch(err => {
-      console.error("Ошибка при генерации PDF", err);
-      alert("Не удалось сгенерировать PDF. Открой консоль браузера для деталей.");
-    });
-}
-
-// Инициализация приложения
-window.addEventListener("DOMContentLoaded", () => {
-  initState();
-  setupSidebar();
-  renderChecklist();
-
-  const exportBtn = document.getElementById("export-btn");
-  const resetBtn = document.getElementById("reset-btn");
-
-  exportBtn.addEventListener("click", exportCurrentChecklistToPDF);
-  resetBtn.addEventListener("click", () => resetCurrentChecklist(true));
-});
+    .map(item => {
+      const prefix =
