@@ -287,4 +287,105 @@ function buildPrintHtml() {
 
   const itemsHtml = state.items
     .map(item => {
-      const prefix =
+      const prefix = item.done ? "☑" : "☐";
+      const photoHtml = item.photoDataUrl
+        ? `<div class="print-photo"><img src="${item.photoDataUrl}" alt="Фото выполнения" /></div>`
+        : "";
+      return `
+        <li>
+          <div class="print-item-text">${prefix} ${escapeHtml(item.text)}</div>
+          ${photoHtml}
+        </li>
+      `;
+    })
+    .join("");
+
+  return `
+    <div class="print-wrapper">
+      <h1 class="print-title">${escapeHtml(cl.title)}</h1>
+      <p class="print-subtitle">${escapeHtml(cl.subtitle)}</p>
+      <p class="print-meta">Дата: ${dateStr}</p>
+      <ol class="print-list">
+        ${itemsHtml}
+      </ol>
+    </div>
+  `;
+}
+
+// Экспорт в PDF (html2canvas + jsPDF, чтобы были и кириллица, и фото)
+function exportCurrentChecklistToPDF() {
+  if (!window.jspdf || !window.jspdf.jsPDF) {
+    alert("Ошибка: библиотека jsPDF не загружена.");
+    return;
+  }
+  if (typeof html2canvas === "undefined") {
+    alert("Ошибка: библиотека html2canvas не загружена.");
+    return;
+  }
+
+  const printArea = document.getElementById("print-area");
+  if (!printArea) {
+    alert("Ошибка: не найден контейнер print-area.");
+    return;
+  }
+
+  // Собираем отдельный «лист» для печати
+  printArea.innerHTML = buildPrintHtml();
+
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF("p", "mm", "a4");
+
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const margin = 10;
+
+  html2canvas(printArea, {
+    scale: 2,             // качество (можно 3, если прям очень хочешь жирный PDF)
+    backgroundColor: "#ffffff"
+  })
+    .then(canvas => {
+      const imgData = canvas.toDataURL("image/png");
+
+      const imgWidth = pageWidth - margin * 2;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      let heightLeft = imgHeight;
+      let position = margin;
+
+      // Первая страница
+      pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
+      heightLeft -= (pageHeight - margin * 2);
+
+      // Если контента больше, чем одна страница — добавляем ещё
+      while (heightLeft > 0) {
+        pdf.addPage();
+        position = margin - (imgHeight - heightLeft);
+        pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
+        heightLeft -= (pageHeight - margin * 2);
+      }
+
+      const cl = CHECKLISTS[currentChecklistId];
+      const fileName = `checklist-${cl.id}-${new Date().toISOString().slice(0, 10)}.pdf`;
+      pdf.save(fileName);
+
+      resetCurrentChecklist(false);
+      showToast("PDF сохранён. Чек-лист сброшен для следующей смены.");
+    })
+    .catch(err => {
+      console.error("Ошибка при генерации PDF", err);
+      alert("Не удалось сгенерировать PDF. Открой консоль браузера для деталей.");
+    });
+}
+
+// Инициализация приложения
+window.addEventListener("DOMContentLoaded", () => {
+  initState();
+  setupSidebar();
+  renderChecklist();
+
+  const exportBtn = document.getElementById("export-btn");
+  const resetBtn = document.getElementById("reset-btn");
+
+  exportBtn.addEventListener("click", exportCurrentChecklistToPDF);
+  resetBtn.addEventListener("click", () => resetCurrentChecklist(true));
+});
