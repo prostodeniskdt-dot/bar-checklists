@@ -267,59 +267,109 @@ function resetCurrentChecklist(showMessage = true) {
   }
 }
 
-// Экспорт в PDF
-function exportCurrentChecklistToPDF() {
+// Экранирование текста для HTML
+function escapeHtml(text) {
+  if (!text) return "";
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+// Собрать HTML для печатной версии чек-листа
+function buildPrintHtml() {
   const cl = CHECKLISTS[currentChecklistId];
   const state = checklistState[currentChecklistId];
 
+  const dateStr = new Date().toLocaleDateString("ru-RU");
+  const itemsHtml = state.items
+    .map((item, index) => {
+      const prefix = item.done ? "☑" : "☐";
+      const photoNote = item.photoDataUrl ? " — фото приложено" : "";
+      return `<li>${prefix} ${escapeHtml(item.text)}${photoNote}</li>`;
+    })
+    .join("");
+
+  return `
+    <div class="print-wrapper">
+      <h1 class="print-title">${escapeHtml(cl.title)}</h1>
+      <p class="print-subtitle">${escapeHtml(cl.subtitle)}</p>
+      <p class="print-meta">Дата: ${dateStr}</p>
+      <ol class="print-list">
+        ${itemsHtml}
+      </ol>
+    </div>
+  `;
+}
+
+// Экспорт в PDF (через html2canvas, чтобы кириллица отображалась корректно)
+function exportCurrentChecklistToPDF() {
   if (!window.jspdf || !window.jspdf.jsPDF) {
     alert("Ошибка: библиотека jsPDF не загружена.");
     return;
   }
+  if (typeof html2canvas === "undefined") {
+    alert("Ошибка: библиотека html2canvas не загружена.");
+    return;
+  }
+
+  const printArea = document.getElementById("print-area");
+  if (!printArea) {
+    alert("Ошибка: не найден контейнер print-area.");
+    return;
+  }
+
+  // Собираем чистый белый лист с текстом чек-листа
+  printArea.innerHTML = buildPrintHtml();
 
   const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
+  const pdf = new jsPDF("p", "mm", "a4");
 
-  const marginLeft = 10;
-  const marginRight = 200;
-  let currentY = 20;
-  const lineHeight = 7;
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const margin = 10;
 
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(16);
-  doc.text(cl.title, marginLeft, currentY);
-  currentY += 8;
+  html2canvas(printArea, {
+    scale: 2,
+    backgroundColor: "#ffffff"
+  })
+    .then(canvas => {
+      const imgData = canvas.toDataURL("image/png");
 
-  doc.setFontSize(11);
-  doc.setFont("helvetica", "normal");
-  doc.text(cl.subtitle, marginLeft, currentY);
-  currentY += 10;
+      const imgWidth = pageWidth - margin * 2;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-  doc.setFontSize(11);
+      let heightLeft = imgHeight;
+      let position = margin;
 
-  state.items.forEach((item, index) => {
-    if (currentY > 280) {
-      doc.addPage();
-      currentY = 20;
-    }
+      // Первая страница
+      pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
+      heightLeft -= (pageHeight - margin * 2);
 
-    const prefix = item.done ? "[x] " : "[ ] ";
-    let text = prefix + item.text;
-    if (item.photoDataUrl) {
-      text += " (фото выполнено)";
-    }
+      // Дополнительные страницы, если контент длинный
+      while (heightLeft > 0) {
+        pdf.addPage();
+        position = margin - (imgHeight - heightLeft);
+        pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
+        heightLeft -= (pageHeight - margin * 2);
+      }
 
-    const lines = doc.splitTextToSize(text, marginRight - marginLeft);
-    doc.text(lines, marginLeft, currentY);
-    currentY += lines.length * lineHeight;
-  });
+      const cl = CHECKLISTS[currentChecklistId];
+      const fileName = `checklist-${cl.id}-${new Date()
+        .toISOString()
+        .slice(0, 10)}.pdf`;
+      pdf.save(fileName);
 
-  const fileName = `checklist-${cl.id}-${new Date().toISOString().slice(0, 10)}.pdf`;
-  doc.save(fileName);
-
-  // После экспорта — обновляем приложение (сброс чек-листа)
-  resetCurrentChecklist(false);
-  showToast("PDF сохранён. Чек-лист сброшен для следующей смены.");
+      // После экспорта — обновляем приложение (сброс чек-листа)
+      resetCurrentChecklist(false);
+      showToast("PDF сохранён. Чек-лист сброшен для следующей смены.");
+    })
+    .catch(err => {
+      console.error("Ошибка при генерации PDF", err);
+      alert("Не удалось сгенерировать PDF. Открой консоль браузера для деталей.");
+    });
 }
 
 // Инициализация приложения

@@ -10,6 +10,8 @@
 
   <!-- jsPDF для экспорта в PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+  <!-- html2canvas для корректной работы с Юникодом (в т.ч. кириллицей) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 
   <!-- Наш JavaScript -->
   <script src="script.js" defer></script>
@@ -55,6 +57,9 @@
       </section>
     </main>
   </div>
+
+  <!-- Скрытая область для красивого PDF-отчёта (белый фон, чёрный текст) -->
+  <div id="print-area" class="print-area"></div>
 
   <div id="toast" class="toast hidden">
     <span id="toast-message"></span>
