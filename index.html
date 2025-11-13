@@ -10,7 +10,7 @@
 
   <!-- jsPDF для экспорта в PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
-  <!-- html2canvas для корректной работы с Юникодом (в т.ч. кириллицей) -->
+  <!-- html2canvas для корректной работы с Юникодом (в т.ч. кириллицей) и фото -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 
   <!-- Наш JavaScript -->
@@ -58,7 +58,7 @@
     </main>
   </div>
 
-  <!-- Скрытая область для красивого PDF-отчёта (белый фон, чёрный текст) -->
+  <!-- Скрытая область для печатной версии PDF (белый фон, текст + фото) -->
   <div id="print-area" class="print-area"></div>
 
   <div id="toast" class="toast hidden">
