@@ -1,4 +1,4 @@
-// Определяем все чек-листы
+// ------------------------- ДАННЫЕ -------------------------
 const CHECKLISTS = {
   opening: {
     id: "opening",
@@ -24,7 +24,7 @@ const CHECKLISTS = {
       "Стекла холодильников чистые",
       "Монитор iiko и принтер чистые.",
       "Термосы с мотивационным кофе принесены из Киссатен",
-      "За баром и в зоне видимости гостей, отсутствуют посторонние предметы и личные вещи."
+      "За баром и в зоне видимости гостей отсутствуют посторонние предметы и личные вещи."
     ]
   },
   day: {
@@ -33,12 +33,12 @@ const CHECKLISTS = {
     subtitle: "Поддерживаем порядок и контроль в процессе смены.",
     items: [
       "Заполнить журнал здоровья сотрудников",
-      "Обязательно записывать если чего-то мало, или заканчивается, или нужно заготовить в группу бара",
+      "Обязательно записывать, если чего-то мало/заканчивается, или нужно заготовить (в группу бара)",
       "Маркировать вскрываемую продукцию",
       "Заготавливать необходимые пф",
-      "Принимать (проверяя со списком заказанного, отписывясь в случае несовпадения) и распределять товар по зонам хранения",
-      "Принимать товар в DocsInBox, как ООО, так и ИП",
-      "Взвешивать, списывать (все списания делать через iiko) и выкидывать испорченные продукты."
+      "Принимать (сверяя со списком), распределять по зонам хранения",
+      "Принимать товар в DocsInBox (ООО и ИП)",
+      "Взвешивать, списывать (через iiko) и утилизировать испорченное."
     ]
   },
   closing: {
@@ -46,32 +46,32 @@ const CHECKLISTS = {
     title: "Чек-лист закрытия смены",
     subtitle: "Закрываем смену так, чтобы утро началось без боли.",
     items: [
-      "Термосы для мотивацинного кофе отнесены на Киссатен",
+      "Термосы для мотивационного кофе отнесены на Киссатен",
       "Работа в DocsInBoх проведена (скрин ООО, ИП)",
-      "Навести порядок на полке с чаями, все аккуратно расставить",
-      "Протереть все стены за кофетачкой и под полкой с алкоголем",
-      "Пивная станция чистая, краны читсые, стоки промыт (фото)",
-      "Все продукты убраны в холодильник или выброшены, согласно условиям хранения и срокам годности",
-      "Соусники отданы в заготовочный цех для заполнения (чистые, без маркировок) (фото)",
-      "Стекла холодильников чистые, без разводов (фото)",
+      "Навести порядок на полке с чаями, всё аккуратно расставить",
+      "Протереть стены за кофетачкой и под полкой с алкоголем",
+      "Пивная станция чистая, краны чистые, стоки промыты (фото)",
+      "Все продукты убраны в холодильник или выброшены по условиям и срокам",
+      "Соусники отданы в заготовочный цех для заполнения (фото)",
+      "Стёкла холодильников чистые, без разводов (фото)",
       "Рельсы холодильников чистые (фото)",
-      "Морозильные камеры чистые, включая уплотнители (фото)",
-      "Посуда натертая размещенна в морозильных камерах и на станции (посуда затаренна максимально)",
-      "Чашки кофейные (влючая флэт, какао), чайники, молочники принесены на бар (затарены максимально)",
-      "Инвентарь отмыт после смены и размещен на места хранения",
-      "Отмыть раковину (и кран) от извести и налета, при забитии слива прочистить раковину вантузом (фото со снятым спилстопами раковины)",
-      "Станции промытые (без остатков льда), чистые, сухие (фото)",
+      "Морозилки чистые, включая уплотнители (фото)",
+      "Посуда натёртая размещена и затарена максимально",
+      "Чашки/чайники/молочники принесены на бар (затарены максимально)",
+      "Инвентарь отмыт и размещён по местам",
+      "Отмыть раковину и кран от налёта; при засоре прочистить (фото)",
+      "Станции промытые, чистые, сухие (фото)",
       "Изимилк промыт химией, ринзор чистый (фото)",
-      "Кофемашина промыта (включая места под группой), выключена, холдеры и инвентарь в кофейной химии (фото)",
-      "Промыть и протереть от пятен и налётов все блестящие, стеклянные, хромированные элементы, инвентарь.",
-      "На полке с алкоголем отсутсвуют пустые места (фото)",
+      "Кофемашина промыта, выключена; холдеры и инвентарь в химии (фото)",
+      "Протереть блестящие/стеклянные/хромированные элементы",
+      "На полке с алкоголем нет пустых мест (фото)",
       "Протереть бутылки влажной тряпкой",
-      "В шкафу за баром порядок (пивное оборудование чистое, радиатор не забит), нет коробок (запас стаканчиков и салфеток аккуратно сложен) (видео)",
-      "По окончанию уборки всю ветошь относим на стирку. На утреннюю смену оставить как минимум одну тряпку.",
-      "Собрать весь мусор из бара и вынести на мусорку.",
-      "Мусорное ведро и место под ним чистые, вставлен новый пакет",
-      "Оттправить стоп/стар-лист",
-      "Написать в передачу смены важную информацию по закрытию, недостающих продуктов, и прочих дел, на которые стоит обратить внимание открывающему",
+      "Шкаф за баром в порядке (видео)",
+      "Всю ветошь — на стирку; на утро — мин. одна тряпка",
+      "Вынести мусор",
+      "Место под ведром чистое, пакет новый",
+      "Отправить стоп/старт-лист",
+      "Передать важную инфу для утренней смены",
       "Закрыть смену в iiko"
     ]
   },
@@ -80,56 +80,46 @@ const CHECKLISTS = {
     title: "Заготовочный цех (закрытие)",
     subtitle: "Подготовка заготовочного цеха к следующему дню.",
     items: [
-      "Обязательно написать старшему бармену, если чего-то мало или заканчивается!!!",
-      "Заявки проверенны, о нерпешедшем товаре (или избыточном) отписаться в \"Заявки\"",
-      "Акты перемещений заполнены и отправленны в группу (фото)",
+      "Написать старшему бармену, если чего-то мало/заканчивается",
+      "Проверить заявки, по несоответствиям — в «Заявки»",
+      "Акты перемещений заполнены и отправлены (фото)",
       "Работа в DocsInBoх проведена (скрин ООО, ИП)",
-      "Заполнить холодильники пф, молоком, винном (белым, красным), софт (теплы, холодный), пиво (все заполнить максимально)",
-      "Все тары для заготовок полные (для следующей смены), чистые, промаркированные (фото)",
-      "Пюре в необходимом объеме для заготовок на следующий день выставленно на дефрост (промаркированно) (фото)",
-      "Все продукты убраны в холодильник (промаркированны) или выброшенны, согласно условиям хранения и срокам годности (фото)",
-      "Инвентарь (мерники, нож, ложки), оборудование (блендеры, резинки и крышки от них, весы) чистые, расставлены по зонам (фото)",
-      "Су-вид и ёмкость чистые без накипи и разводов (фото)",
-      "Розетки удленители провода чистые. Безопасны для использования (фото)",
-      "Холодильники чистые внутри (включая уплотнители), стекло чистое (без разводов), отсутсвует наледь (фото)",
-      "Полки, поверхности чистые, без разводов и капель воды (фото)",
-      "Холодильники в коридоре чистые (фрукты находятся в боксах с маркировкой) (фото)",
-      "Льдогенераторы чистые, совок хранится в отдельном контейнере, бланк замывки заполнен (фото)",
-      "Раковина (и кран) чистые, в раковине отсутсвует мусор, место под раковиной чистое (фото)",
-      "Вся продукция не лежит на полу, можно хранить на паддонах или стеллажах.",
-      "На цеху отсутсвуют грязные соусники, посуда",
-      "Полы, стены чистые",
-      "Стеллажи, шкаф в насосной чистые, пустые коробки и прочий мусор убраны",
-      "Оборудование на ночь выключено",
-      "Документы в накопителе сложены аккуратно (включая нкаопитель с наклыдными принятой продукции)",
-      "Написать в передачу смены важную информацию по закрытию, недостающих продуктов, и прочих дел, на которые стоит обратить внимание открывающему."
+      "Заполнить холодильники пф, молоком, вином, софт, пивом (макс.)",
+      "Тары полные, чистые, промаркированы (фото)",
+      "Пюре на дефрост для завтра (промаркировано) (фото)",
+      "Продукты убраны/промаркированы или утилизированы (фото)",
+      "Инвентарь и оборудование чистые, разложены (фото)",
+      "Су-вид и ёмкость чистые, без накипи (фото)",
+      "Розетки/удлинители чистые и безопасные (фото)",
+      "Холодильники чистые, без наледи (фото)",
+      "Полки/поверхности чистые (фото)",
+      "Холодильники в коридоре чистые, фрукты в промаркир. боксах (фото)",
+      "Льдогенераторы чистые, совок отдельно, бланк замывки (фото)",
+      "Раковина и место под ней чистые (фото)",
+      "Ничего не лежит на полу (поддоны/стеллажи)",
+      "Нет грязной посуды/соусников",
+      "Полы/стены чистые",
+      "Стеллажи/шкаф в насосной чистые, мусор убран",
+      "Оборудование выключено",
+      "Документы в накопителе аккуратно",
+      "Передача смены — важная инфа и недостачи"
     ]
   }
 };
 
-// Состояние (галочки + фото) для каждого чек-листа
+// Состояние приложения
 let checklistState = {};
 let currentChecklistId = "opening";
+let currentUser = null; // {name, role}
+let timers = {}; // по чек-листу: { startedAt:number|null, finishedAt:number|null, deadline:number|null, tick:int|null }
 
-function initState() {
-  checklistState = {};
-  for (const key in CHECKLISTS) {
-    const cl = CHECKLISTS[key];
-    checklistState[key] = {
-      items: cl.items.map(text => ({
-        text,
-        done: false,
-        photoDataUrl: null
-      }))
-    };
-  }
-}
+// ------------------------- УТИЛЫ -------------------------
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
 
-// Toast (уведомление)
 function showToast(message) {
-  const toast = document.getElementById("toast");
-  const toastMessage = document.getElementById("toast-message");
-  toastMessage.textContent = message;
+  const toast = $("#toast");
+  $("#toast-message").textContent = message;
   toast.classList.remove("hidden");
   toast.classList.add("visible");
   setTimeout(() => {
@@ -138,37 +128,203 @@ function showToast(message) {
   }, 2500);
 }
 
-// Навигация
+function escapeHtml(text) {
+  if (!text) return "";
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function fmtTime(ts) {
+  if (!ts) return "—";
+  return new Date(ts).toLocaleString("ru-RU");
+}
+
+function pad(n) { return n < 10 ? "0"+n : ""+n; }
+
+function formatCountdown(ms) {
+  const s = Math.max(0, Math.floor(ms/1000));
+  const hh = Math.floor(s / 3600);
+  const mm = Math.floor((s % 3600) / 60);
+  const ss = s % 60;
+  return `${pad(hh)}:${pad(mm)}:${pad(ss)}`;
+}
+
+// ------------------------- АВТОРИЗАЦИЯ -------------------------
+function loadUser() {
+  try {
+    const raw = localStorage.getItem("barctrl.user");
+    if (raw) currentUser = JSON.parse(raw);
+  } catch {}
+  updateUserBadge();
+}
+
+function saveUser() {
+  localStorage.setItem("barctrl.user", JSON.stringify(currentUser));
+  updateUserBadge();
+}
+
+function updateUserBadge() {
+  const badge = $("#user-badge");
+  if (currentUser) {
+    badge.textContent = `${currentUser.name} • ${currentUser.role}`;
+  } else {
+    badge.textContent = "Гость";
+  }
+}
+
+function openAuthModal() {
+  $("#auth-modal").classList.remove("hidden");
+  $("#auth-name").focus();
+}
+function closeAuthModal() {
+  $("#auth-modal").classList.add("hidden");
+}
+
+function setupAuth() {
+  $("#login-btn").addEventListener("click", () => {
+    if (currentUser) {
+      // выход
+      currentUser = null;
+      localStorage.removeItem("barctrl.user");
+      updateUserBadge();
+      showToast("Вы вышли из системы.");
+      $("#login-btn").textContent = "Войти";
+    } else {
+      openAuthModal();
+    }
+  });
+  $("#auth-cancel").addEventListener("click", closeAuthModal);
+  $("#auth-ok").addEventListener("click", () => {
+    const name = $("#auth-name").value.trim();
+    const role = $("#auth-role").value;
+    if (!name) return showToast("Введите имя.");
+    currentUser = { name, role };
+    saveUser();
+    closeAuthModal();
+    $("#login-btn").textContent = "Выйти";
+    showToast(`Вошли как ${name}`);
+  });
+
+  // если уже залогинены раньше
+  if (currentUser) $("#login-btn").textContent = "Выйти";
+}
+
+// ------------------------- ТАЙМЕРЫ -------------------------
+function ensureTimer(clid) {
+  if (!timers[clid]) {
+    timers[clid] = { startedAt: null, finishedAt: null, deadline: null, tick: null };
+  }
+  return timers[clid];
+}
+
+function startChecklistTimer() {
+  const t = ensureTimer(currentChecklistId);
+  if (t.startedAt) return; // уже идёт
+  t.startedAt = Date.now();
+  t.deadline = t.startedAt + 60 * 60 * 1000; // +1 час
+  t.finishedAt = null;
+
+  localStorage.setItem("barctrl.timers", JSON.stringify(timers));
+  renderSessionInfo();
+  runTicker();
+  showToast("Таймер на 1 час запущен.");
+}
+
+function finishChecklistNow() {
+  const t = ensureTimer(currentChecklistId);
+  if (!t.startedAt) return;
+  if (!t.finishedAt) {
+    t.finishedAt = Date.now();
+    localStorage.setItem("barctrl.timers", JSON.stringify(timers));
+    renderSessionInfo();
+  }
+}
+
+function loadTimers() {
+  try {
+    const raw = localStorage.getItem("barctrl.timers");
+    if (raw) timers = JSON.parse(raw);
+  } catch {}
+}
+
+function runTicker() {
+  const timerEl = $("#timer");
+  const t = ensureTimer(currentChecklistId);
+
+  if (!t.startedAt) {
+    timerEl.classList.add("hidden");
+    return;
+  }
+  timerEl.classList.remove("hidden");
+
+  // очищаем старый тикер
+  if (t.tick) {
+    clearInterval(t.tick);
+    t.tick = null;
+  }
+
+  const update = () => {
+    const now = Date.now();
+    const left = (t.deadline || now) - now;
+    timerEl.textContent = formatCountdown(left);
+    if (left <= 0) {
+      timerEl.textContent = "00:00:00";
+      clearInterval(t.tick);
+      t.tick = null;
+    }
+  };
+  update();
+  t.tick = setInterval(update, 1000);
+}
+
+function renderSessionInfo() {
+  const t = ensureTimer(currentChecklistId);
+  $("#session-info").textContent =
+    (t.startedAt ? `Начато: ${fmtTime(t.startedAt)}; ` : "") +
+    (t.finishedAt ? `Завершено: ${fmtTime(t.finishedAt)}` : "");
+}
+
+// ------------------------- РЕНДЕР -------------------------
+function initState() {
+  checklistState = {};
+  for (const key in CHECKLISTS) {
+    const cl = CHECKLISTS[key];
+    checklistState[key] = {
+      items: cl.items.map(text => ({ text, done: false, photoDataUrl: null }))
+    };
+  }
+}
+
 function setupSidebar() {
-  const navButtons = document.querySelectorAll(".nav-item");
-  navButtons.forEach(btn => {
+  $$(".nav-item").forEach(btn => {
     btn.addEventListener("click", () => {
       const id = btn.dataset.checklist;
       if (id === currentChecklistId) return;
       currentChecklistId = id;
-
-      navButtons.forEach(b => b.classList.remove("active"));
+      $$(".nav-item").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
-
       renderChecklist();
+      renderSessionInfo();
+      runTicker();
     });
   });
 }
 
-// Рендер выбранного чек-листа
 function renderChecklist() {
   const cl = CHECKLISTS[currentChecklistId];
   const state = checklistState[currentChecklistId];
 
-  const titleEl = document.getElementById("checklist-title");
-  const subtitleEl = document.getElementById("checklist-subtitle");
-  const container = document.getElementById("checklist-container");
+  $("#checklist-title").textContent = cl.title;
+  $("#checklist-subtitle").textContent = cl.subtitle;
 
-  titleEl.textContent = cl.title;
-  subtitleEl.textContent = cl.subtitle;
+  const container = $("#checklist-container");
   container.innerHTML = "";
 
-  state.items.forEach((item, index) => {
+  state.items.forEach(item => {
     const itemEl = document.createElement("div");
     itemEl.className = "checklist-item";
 
@@ -180,19 +336,13 @@ function renderChecklist() {
     checkbox.checked = item.done;
     checkbox.addEventListener("change", () => {
       item.done = checkbox.checked;
-      if (item.done) {
-        textSpan.classList.add("done");
-      } else {
-        textSpan.classList.remove("done");
-      }
+      textSpan.classList.toggle("done", item.done);
     });
 
     const textSpan = document.createElement("span");
     textSpan.className = "checklist-text";
     textSpan.textContent = item.text;
-    if (item.done) {
-      textSpan.classList.add("done");
-    }
+    if (item.done) textSpan.classList.add("done");
 
     left.appendChild(checkbox);
     left.appendChild(textSpan);
@@ -220,13 +370,9 @@ function renderChecklist() {
     const preview = document.createElement("img");
     preview.className = "photo-preview";
     preview.style.display = item.photoDataUrl ? "block" : "none";
-    if (item.photoDataUrl) {
-      preview.src = item.photoDataUrl;
-    }
+    if (item.photoDataUrl) preview.src = item.photoDataUrl;
 
-    photoBtn.addEventListener("click", () => {
-      fileInput.click();
-    });
+    photoBtn.addEventListener("click", () => fileInput.click());
 
     fileInput.addEventListener("change", () => {
       const file = fileInput.files[0];
@@ -243,7 +389,6 @@ function renderChecklist() {
 
     actions.appendChild(photoBtn);
     actions.appendChild(preview);
-
     photoBlock.appendChild(label);
     photoBlock.appendChild(actions);
 
@@ -254,138 +399,165 @@ function renderChecklist() {
   });
 }
 
-// Сброс текущего чек-листа
 function resetCurrentChecklist(showMessage = true) {
   const state = checklistState[currentChecklistId];
-  state.items.forEach(item => {
-    item.done = false;
-    item.photoDataUrl = null;
-  });
+  state.items.forEach(i => { i.done = false; i.photoDataUrl = null; });
+  const t = ensureTimer(currentChecklistId);
+  if (t.tick) clearInterval(t.tick);
+  timers[currentChecklistId] = { startedAt: null, finishedAt: null, deadline: null, tick: null };
+  localStorage.setItem("barctrl.timers", JSON.stringify(timers));
   renderChecklist();
-  if (showMessage) {
-    showToast("Чек-лист сброшен для следующей смены.");
-  }
+  renderSessionInfo();
+  runTicker();
+  if (showMessage) showToast("Чек-лист сброшен для следующей смены.");
 }
 
-// Экранируем текст для HTML
-function escapeHtml(text) {
-  if (!text) return "";
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-// Собираем HTML для печатной версии (текст + фото)
+// ------------------------- ПЕЧАТНАЯ ВЕРСТКА + PDF/SHARE -------------------------
 function buildPrintHtml() {
   const cl = CHECKLISTS[currentChecklistId];
   const state = checklistState[currentChecklistId];
+  const t = ensureTimer(currentChecklistId);
 
   const dateStr = new Date().toLocaleDateString("ru-RU");
+  const author = currentUser ? `${currentUser.name} • ${currentUser.role}` : "Гость";
 
-  const itemsHtml = state.items
-    .map(item => {
-      const prefix = item.done ? "☑" : "☐";
-      const photoHtml = item.photoDataUrl
-        ? `<div class="print-photo"><img src="${item.photoDataUrl}" alt="Фото выполнения" /></div>`
-        : "";
-      return `
-        <li>
-          <div class="print-item-text">${prefix} ${escapeHtml(item.text)}</div>
-          ${photoHtml}
-        </li>
-      `;
-    })
-    .join("");
+  // статус по времени
+  let statusHtml = "";
+  if (t.startedAt && t.finishedAt) {
+    const ok = t.finishedAt <= t.deadline;
+    statusHtml = `<div class="status ${ok ? "ok" : "bad"}">${
+      ok ? "Чек-лист выполнен согласно нормам" : "Чек-лист не выполнен в срок"
+    }</div>`;
+  }
+
+  const itemsHtml = state.items.map(item => {
+    const prefix = item.done ? "☑" : "☐";
+    const photoHtml = item.photoDataUrl
+      ? `<div class="print-photo"><img src="${item.photoDataUrl}" alt="Фото"/></div>`
+      : "";
+    return `
+      <li>
+        <div class="print-item-text">${prefix} ${escapeHtml(item.text)}</div>
+        ${photoHtml}
+      </li>
+    `;
+  }).join("");
 
   return `
     <div class="print-wrapper">
       <h1 class="print-title">${escapeHtml(cl.title)}</h1>
       <p class="print-subtitle">${escapeHtml(cl.subtitle)}</p>
-      <p class="print-meta">Дата: ${dateStr}</p>
+
+      <div class="print-grid">
+        <div><b>Автор:</b> ${escapeHtml(author)}</div>
+        <div><b>Дата:</b> ${dateStr}</div>
+        <div><b>Начато:</b> ${fmtTime(t.startedAt)}</div>
+        <div><b>Завершено:</b> ${fmtTime(t.finishedAt)}</div>
+        <div><b>Длительность:</b> ${t.startedAt && t.finishedAt ? formatCountdown(t.finishedAt - t.startedAt) : "—"}</div>
+      </div>
+
       <ol class="print-list">
         ${itemsHtml}
       </ol>
+
+      ${statusHtml}
     </div>
   `;
 }
 
-// Экспорт в PDF (html2canvas + jsPDF, чтобы были и кириллица, и фото)
-function exportCurrentChecklistToPDF() {
+// Генерация PDF в Blob и шаринг
+async function shareCurrentChecklistPDF() {
   if (!window.jspdf || !window.jspdf.jsPDF) {
-    alert("Ошибка: библиотека jsPDF не загружена.");
+    alert("Ошибка: jsPDF не загружен.");
     return;
   }
   if (typeof html2canvas === "undefined") {
-    alert("Ошибка: библиотека html2canvas не загружена.");
+    alert("Ошибка: html2canvas не загружен.");
     return;
   }
+
+  // если не завершали — фиксируем время завершения
+  finishChecklistNow();
 
   const printArea = document.getElementById("print-area");
-  if (!printArea) {
-    alert("Ошибка: не найден контейнер print-area.");
-    return;
-  }
-
-  // Собираем отдельный «лист» для печати
   printArea.innerHTML = buildPrintHtml();
 
   const { jsPDF } = window.jspdf;
   const pdf = new jsPDF("p", "mm", "a4");
-
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
   const margin = 10;
 
-  html2canvas(printArea, {
-    scale: 2,             // качество (можно 3, если прям очень хочешь жирный PDF)
-    backgroundColor: "#ffffff"
-  })
-    .then(canvas => {
-      const imgData = canvas.toDataURL("image/png");
+  const canvas = await html2canvas(printArea, { scale: 2, backgroundColor: "#ffffff" });
+  const imgData = canvas.toDataURL("image/png");
+  const imgWidth = pageWidth - margin * 2;
+  const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-      const imgWidth = pageWidth - margin * 2;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  let heightLeft = imgHeight;
+  let position = margin;
 
-      let heightLeft = imgHeight;
-      let position = margin;
+  pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
+  heightLeft -= (pageHeight - margin * 2);
 
-      // Первая страница
-      pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
-      heightLeft -= (pageHeight - margin * 2);
+  while (heightLeft > 0) {
+    pdf.addPage();
+    position = margin - (imgHeight - heightLeft);
+    pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
+    heightLeft -= (pageHeight - margin * 2);
+  }
 
-      // Если контента больше, чем одна страница — добавляем ещё
-      while (heightLeft > 0) {
-        pdf.addPage();
-        position = margin - (imgHeight - heightLeft);
-        pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
-        heightLeft -= (pageHeight - margin * 2);
-      }
+  const cl = CHECKLISTS[currentChecklistId];
+  const fileName = `checklist-${cl.id}-${new Date().toISOString().slice(0,10)}.pdf`;
 
-      const cl = CHECKLISTS[currentChecklistId];
-      const fileName = `checklist-${cl.id}-${new Date().toISOString().slice(0, 10)}.pdf`;
-      pdf.save(fileName);
+  // получаем Blob
+  const blob = pdf.output("blob");
+  const file = new File([blob], fileName, { type: "application/pdf" });
 
+  // если можно пошарить файл — шэрим
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({
+        title: "Отчёт чек-листа",
+        text: "PDF-отчёт по чек-листу",
+        files: [file]
+      });
+      showToast("Отчёт отправлен.");
       resetCurrentChecklist(false);
-      showToast("PDF сохранён. Чек-лист сброшен для следующей смены.");
-    })
-    .catch(err => {
-      console.error("Ошибка при генерации PDF", err);
-      alert("Не удалось сгенерировать PDF. Открой консоль браузера для деталей.");
-    });
+      return;
+    } catch (e) {
+      // пользователь мог отменить — падаем в fallback
+      console.warn("Share canceled or failed", e);
+    }
+  }
+
+  // Fallback: создать ссылку и скачать + открыть, чтобы можно было переслать
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  // также откроем в новой вкладке (можно переслать как файл/ссылку)
+  window.open(url, "_blank");
+  showToast("Скачай/перешли PDF вручную.");
+  resetCurrentChecklist(false);
 }
 
-// Инициализация приложения
+// ------------------------- ИНИТ -------------------------
 window.addEventListener("DOMContentLoaded", () => {
+  loadUser();
+  loadTimers();
+
   initState();
   setupSidebar();
   renderChecklist();
+  renderSessionInfo();
+  runTicker();
 
-  const exportBtn = document.getElementById("export-btn");
-  const resetBtn = document.getElementById("reset-btn");
-
-  exportBtn.addEventListener("click", exportCurrentChecklistToPDF);
-  resetBtn.addEventListener("click", () => resetCurrentChecklist(true));
+  $("#start-btn").addEventListener("click", startChecklistTimer);
+  $("#export-btn").addEventListener("click", shareCurrentChecklistPDF);
+  $("#reset-btn").addEventListener("click", () => resetCurrentChecklist(true));
+  setupAuth();
 });
