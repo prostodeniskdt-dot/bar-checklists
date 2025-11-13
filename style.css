@@ -337,7 +337,8 @@ h1 {
   }
 }
 
-/* Скрытая область для печати PDF (белый фон, чёрный текст) */
+/* ---- Печатная версия для PDF ---- */
+
 .print-area {
   position: fixed;
   left: -9999px;
@@ -378,5 +379,17 @@ h1 {
 }
 
 .print-list li {
+  margin-bottom: 12px;
+}
+
+.print-item-text {
   margin-bottom: 4px;
+}
+
+.print-photo img {
+  max-width: 260px;   /* чтобы фото были крупные, но влезали по ширине A4 */
+  max-height: 260px;
+  border-radius: 8px;
+  border: 1px solid #cccccc;
+  display: block;
 }
