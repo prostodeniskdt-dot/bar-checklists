@@ -5,14 +5,12 @@
   <title>Чек-листы бара</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-  <!-- Стили -->
   <link rel="stylesheet" href="style.css"/>
 
   <!-- jsPDF + html2canvas -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 
-  <!-- Наш JavaScript -->
   <script src="script.js" defer></script>
 </head>
 <body>
@@ -31,7 +29,7 @@
       </nav>
 
       <div class="sidebar-footer">
-        <small>Версия 1.3</small>
+        <small>Версия 1.4</small>
       </div>
     </aside>
 
@@ -48,7 +46,7 @@
 
         <div class="actions">
           <button id="login-btn" class="btn btn-secondary">Войти</button>
-          <button id="start-btn" class="btn btn-start">Начать</button>
+          <button id="start-btn" class="btn btn-start hidden">Начать</button>
           <span id="timer" class="timer hidden">01:00:00</span>
           <button id="export-btn" class="btn btn-primary">Поделиться отчётом</button>
         </div>
@@ -60,7 +58,7 @@
     </main>
   </div>
 
-  <!-- Скрытая область для печатной версии PDF (белый фон, текст + фото) -->
+  <!-- Печатная область -->
   <div id="print-area" class="print-area"></div>
 
   <!-- Модал авторизации -->
@@ -81,6 +79,22 @@
       <div class="modal-actions">
         <button id="auth-cancel" class="btn btn-secondary">Отмена</button>
         <button id="auth-ok" class="btn btn-primary">Войти</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модал камеры -->
+  <div id="camera-modal" class="modal hidden">
+    <div class="modal-card camera-card">
+      <h3>Камера</h3>
+      <div class="camera-box">
+        <video id="cam-video" autoplay playsinline></video>
+        <canvas id="cam-canvas" class="hidden"></canvas>
+      </div>
+      <div class="modal-actions">
+        <button id="cam-switch" class="btn btn-secondary" title="Переключить камеру">↺</button>
+        <button id="cam-cancel" class="btn btn-secondary">Отмена</button>
+        <button id="cam-shoot" class="btn btn-primary">Сделать фото</button>
       </div>
     </div>
   </div>
