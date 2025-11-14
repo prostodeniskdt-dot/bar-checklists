@@ -56,19 +56,21 @@ h1 { margin: 0; font-size: 22px; }
 
 /* Фото */
 .photo-block { display: flex; flex-direction: column; gap: 4px; align-items: flex-end; }
-.photo-label { font-size: 11px; color: #aaa; }
-.photo-actions { display: flex; gap: 6px; align-items: center; }
-.photo-input { display: none; }
+.photo-label { font-size: 11px; color: #aaa; margin-bottom: 2px; }
+.photo-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 .photo-btn { font-size: 11px; padding: 4px 9px; border-radius: 999px; border: 1px dashed #ffd600; background: transparent; color: #ffd600; cursor: pointer; white-space: nowrap; }
 .photo-btn:hover { background: rgba(255,214,0,.1); }
-.photo-preview { width: 46px; height: 46px; border-radius: 8px; border: 1px solid #333; object-fit: cover; }
+.photo-previews { display: flex; gap: 6px; flex-wrap: wrap; }
+.thumb { position: relative; }
+.thumb img { width: 64px; height: 64px; border-radius: 8px; border: 1px solid #333; object-fit: cover; display: block; }
+.thumb-del { position: absolute; top: -6px; right: -6px; width: 18px; height: 18px; border-radius: 9px; border: none; background: #c81e1e; color: #fff; cursor: pointer; font-size: 13px; line-height: 18px; }
 
 /* Toast */
 .toast { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); padding: 10px 16px; border-radius: 999px; font-size: 13px; background: #111; color: #ffd600; border: 1px solid #ffd600; box-shadow: 0 12px 30px rgba(0,0,0,.7); opacity: 0; pointer-events: none; transition: opacity .18s, transform .18s; }
 .toast.visible { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(-3px); }
 .toast.hidden { opacity: 0; }
 
-/* Модал */
+/* Модалы */
 .modal { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: grid; place-items: center; z-index: 100; }
 .modal.hidden { display: none; }
 .modal-card { width: 320px; background: #0f0f0f; border: 1px solid #2a2a2a; border-radius: 12px; padding: 16px; box-shadow: 0 20px 50px rgba(0,0,0,.8); }
@@ -76,8 +78,13 @@ h1 { margin: 0; font-size: 22px; }
 .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
 .field input, .field select { background: #161616; color: #eee; border: 1px solid #303030; border-radius: 8px; padding: 8px 10px; }
 
+/* Камера */
+.camera-card { width: min(720px, 96vw); }
+.camera-box { background: #000; border-radius: 10px; border: 1px solid #222; overflow: hidden; display: grid; place-items: center; aspect-ratio: 16/9; margin-bottom: 10px; }
+#cam-video, #cam-canvas { width: 100%; height: auto; display: block; }
+
 /* Печать / PDF */
-.print-area { position: fixed; left: -9999px; top: 0; width: 800px; background: #fff; color: #000; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.print-area { position: fixed; left: -9999px; top: 0; width: 900px; background: #fff; color: #000; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
 .print-wrapper { padding: 24px 32px; }
 .print-title { margin: 0 0 6px; font-size: 20px; font-weight: 700; }
 .print-subtitle { margin: 0 0 8px; font-size: 13px; color: #555; }
@@ -86,9 +93,6 @@ h1 { margin: 0; font-size: 22px; }
 .print-list li { margin-bottom: 12px; }
 .print-item-text { margin-bottom: 6px; }
 .print-photo img { max-width: 260px; max-height: 260px; border-radius: 8px; border: 1px solid #ccc; display: block; }
-.status { margin-top: 14px; font-weight: 700; }
-.status.ok { color: #0f7b1e; }
-.status.bad { color: #c81e1e; }
 
 /* Адаптив */
 @media (max-width: 768px) {
